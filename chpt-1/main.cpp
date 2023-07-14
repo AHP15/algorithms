@@ -1,5 +1,6 @@
 #include <array>
 #include <iostream>
+#include <span>
 
 template <typename T, auto size>
 std::array<T, size> insertion_sort(std::array<T, size>& arr) {
