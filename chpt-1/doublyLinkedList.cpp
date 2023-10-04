@@ -5,11 +5,12 @@ template <typename T>
 struct Node
 {
     T value{};
-    Node *next{nullptr};
+    Node<T> *next{nullptr};
+    Node<T> *prev{nullptr};
 };
 
 template <typename T>
-class linkedList
+class DoublyLinkedList
 {
 public:
     void push(T value)
@@ -26,12 +27,14 @@ public:
         if (!tail)
         {
             tail = newNode;
+            tail->prev = head;
             head->next = tail;
             ++size;
             return;
         }
 
         tail->next = newNode;
+        newNode->prev = tail;
         tail = newNode;
         ++size;
     }
@@ -48,35 +51,30 @@ public:
         }
 
         newHead->next = head;
+        head->prev = newHead;
         head = newHead;
         ++size;
     }
 
     T pop()
     {
-
         assert(size > 0);
 
-        if (size == 1)
+        if (!tail)
         {
             T value{head->value};
+            delete head;
             head = nullptr;
-            --size;
             return value;
-        };
-
-        int i{0};
-        Node<T> *current{head};
-        while (i < size - 2) // the loop should stop one element before the last
-        {
-            current = current->next;
-            ++i;
         }
 
-        T value{current->next->value};
-        current->next = nullptr;
-        --size;
+        Node<T> *oldTail = tail;
+        T value{oldTail->value};
 
+        tail = tail->prev;
+        tail->next = nullptr;
+        delete oldTail;
+        --size;
         return value;
     }
 
@@ -88,6 +86,7 @@ public:
         Node<T> *temp{head};
 
         head = head->next;
+        head->prev = nullptr;
 
         --size;
 
@@ -96,7 +95,8 @@ public:
 
     void insertAt(T value, int position)
     {
-        if(position == 0) {
+        if (position == 0)
+        {
             unshift(value);
             return;
         }
@@ -113,18 +113,22 @@ public:
         Node<T> *oldNext{current->next};
         Node<T> *newNext{new Node{value}};
         current->next = newNext;
+        newNext->prev = current;
+
         newNext->next = oldNext;
+        oldNext->prev = newNext;
         ++size;
     }
 
-    void remove(int index) {
-
-        if(index == 0) {
+    void remove(int index)
+    {
+        if (index == 0)
+        {
             shift();
             return;
         }
 
-        Node<T>* current{head};
+        Node<T> *current{head};
         int i{0};
         // index - 1 because the loop should stop before the insertion position by one
         while (i < index - 1)
@@ -141,40 +145,65 @@ public:
         --size;
     }
 
-    T get(int index)
+    void reverse()
     {
+        if (size <= 1)
+            return;
+
         Node<T> *current{head};
-        int i{0};
-        while (i < index)
-        {
-            current = current->next;
-            ++i;
-        }
+        Node<T> *next{nullptr};
+        Node<T> *prev{nullptr};
 
-        return current->value;
-    }
-
-    void reverse() {
-        if(size <= 1) return;
-
-        Node<T>* current {head};
-        Node<T>* next{ nullptr };
-        Node<T>* prev { nullptr };
-
-        while (current)
+        int i{ 0 };
+        while (i++ < size)
         {
             next = current->next;
+            prev = current->prev;
+
             current->next = prev;
-            prev = current;
+            current->prev = next;
+
             current = next;
         }
 
         tail = head;
-        head = prev;
-        
+        head = current;
     }
 
-    ~linkedList() {
+    // this method loop throughout the list from both ends
+    // if index is in the first half of the list then it start looping from the start
+    // otherwise it start from the end
+    // this reduces the time complexity from O(n) to O(n/2)
+    T get(int index)
+    {
+        bool isInFirstHalf{index <= size / 2};
+        int i{isInFirstHalf ? 0 : size - 1};
+
+        Node<T> *current{isInFirstHalf ? head : tail};
+        while (true)
+        {
+            if (i == index)
+                break;
+
+            if (isInFirstHalf)
+            {
+                current = current->next;
+                ++i;
+            }
+            else
+            {
+                current = current->prev;
+                --i;
+            }
+        }
+        // prev instead of next because the loop will stop one after the desired node
+        return current->value;
+    }
+
+    int getLength() { return size; }
+
+    ~DoublyLinkedList()
+    {
         while (size > 0)
         {
             shift();
@@ -190,7 +219,20 @@ private:
 
 int main()
 {
+    DoublyLinkedList<int> dlist{};
 
-    linkedList<int> list{};
+    for (int i{1}; i <= 7; ++i)
+    {
+        dlist.push(i);
+    }
+
+    dlist.reverse();
+
+    for (int i{0}; i < dlist.getLength(); ++i)
+    {
+        std::cout << dlist.get(i);
+    }
+
+    std::cout << '\n';
     return 0;
 }
