@@ -17,3 +17,7 @@ public:
 private:
     Node<T>* root{ nullptr };
 };
+
+int main() {
+    return 0;
+}

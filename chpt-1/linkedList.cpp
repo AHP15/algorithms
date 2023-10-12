@@ -74,6 +74,7 @@ public:
         }
 
         T value{current->next->value};
+	delete current->next;
         current->next = nullptr;
         --size;
 
