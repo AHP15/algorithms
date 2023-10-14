@@ -50,6 +50,7 @@
 				"-Werror",
 				"-std=c++20",
 				"${file}",
+				"-lSDL2",
 				"-o",
 				"${fileDirname}/app"
 			],
