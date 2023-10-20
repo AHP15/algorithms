@@ -9,8 +9,6 @@
 				"-fcolor-diagnostics",
 				"-fansi-escape-codes",
 				"-g",
-				"-O2",
-				"-DNDEBUG",
 				"-pedantic-errors",
 				"-Wall",
 				"-Weffc++",
@@ -21,6 +19,8 @@
 				"-std=c++20",
 				"${file}",
 				"-o",
+				"-Iincludes",
+				"-Itests",
 				"${fileDirname}/app"
 			],
 			"options": {
@@ -39,8 +39,6 @@
 			"args": [
 				"-fdiagnostics-color=always",
 				"-g",
-				"-O2",
-				"-DNDEBUG",
 				"-pedantic-errors",
 				"-Wall",
 				"-Weffc++",
@@ -49,8 +47,9 @@
 				"-Wsign-conversion",
 				"-Werror",
 				"-std=c++20",
+				"-I./includes",
+				"-I./tests",
 				"${file}",
-				"-lSDL2",
 				"-o",
 				"${fileDirname}/app"
 			],
