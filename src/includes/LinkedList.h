@@ -1,7 +1,6 @@
 #ifndef LINKED_LIST_H
 #define LINKED_LIST_H
 
-
 template <typename T>
 struct Node
 {
@@ -74,6 +73,42 @@ public:
 
         newNode->next = head;
         head = newNode;
+    }
+
+    void shift()
+    {
+        Node<T>* temp { head };
+        head = head->next;
+    delete temp;
+        --size;
+    }
+
+    void removeAt(int position)
+    {
+        if(position == 0)
+        {
+            shift();
+            return;
+        }
+
+        if(position == size - 1)
+        {
+            pop();
+            return;
+        }
+
+        Node<T>* current { head };
+        int i { 0 };
+        while (i < position - 1)
+        {
+            current = current->next;
+            i++;
+        }
+
+        Node<T>* nodeToBeRemoved { current->next };
+        current->next = nodeToBeRemoved->next;
+    delete nodeToBeRemoved;
+        --size;
     }
 
     T get(int index)
